@@ -9,7 +9,7 @@ from app.crud.duellio import (
     get_situation_id_by_name,
     read_all_situations_from_db,
 )
-from app.schemas.duellio import Situation
+from app.schemas.duellio import Situation, SituationDB
 
 router = APIRouter(prefix="/articles", tags=["Articles"])
 
@@ -28,7 +28,7 @@ async def get_all_situations(
 
 @router.post(
     "/",
-    response_model=Situation,
+    response_model=SituationDB,
     response_model_exclude_none=True,
 )
 async def create_new_meeting_room(
