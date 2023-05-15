@@ -8,26 +8,27 @@ from app.crud.duellio import (
     create_situation,
     get_situation_id_by_name,
     read_all_situations_from_db,
+    read_all_situations_with_tags_from_db
 )
-from app.schemas.duellio import Situation, SituationDB
+from app.schemas.duellio import Situation, SituationDB, SituationSchemaDB
 
-router = APIRouter(prefix="/articles", tags=["Articles"])
+router = APIRouter()
 
 
 @router.get(
-    "/",
-    response_model=list[Situation],
+    "/situation",
+    response_model=list[SituationSchemaDB],
     response_model_exclude_none=True,
 )
 async def get_all_situations(
     session: AsyncSession = Depends(get_async_session),
 ):
-    all_situations = await read_all_situations_from_db(session)
+    all_situations = await read_all_situations_with_tags_from_db(session)
     return all_situations
 
 
 @router.post(
-    "/",
+    "/situation",
     response_model=SituationDB,
     response_model_exclude_none=True,
 )

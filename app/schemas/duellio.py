@@ -27,9 +27,9 @@ class TagsDB(Tags):
         orm_mode = True
 
 
-class SituationSchema(Situation):
-    tags: List[Tags]
+class SituationSchemaDB(SituationDB):
+    tags: List[TagsDB]
 
 
-class TagSchema(Tags):
-    situations: List[Situation]
+class TagSchemaDB(TagsDB):
+    situations: List[SituationDB]

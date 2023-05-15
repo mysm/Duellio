@@ -2,9 +2,9 @@
 
 from typing import Optional, Union
 
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import joinedload
 
 from app.models.duellio import Situation, Tags
 
@@ -25,6 +25,14 @@ async def read_all_situations_from_db(
 ) -> list[Situation]:
     db_situations = await session.execute(select(Situation))
     return db_situations.scalars().all()
+
+
+async def read_all_situations_with_tags_from_db(
+    session: AsyncSession,
+):
+    db_situations = await session.execute(select(Situation).options(joinedload(Situation.tags)))
+    return db_situations.scalars().unique().all()
+
 
 
 async def get_situation_by_id(
