@@ -2,6 +2,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi_pagination import Page, paginate
 
 from app.core.db import get_async_session
 from app.crud.duellio import duellio_crud
@@ -12,14 +13,14 @@ router = APIRouter()
 
 @router.get(
     "/situation",
-    response_model=list[SituationSchemaDB],
+    response_model=Page[list[SituationSchemaDB]],
     response_model_exclude_none=True,
 )
 async def get_all_situations(
     session: AsyncSession = Depends(get_async_session),
 ):
     all_situations = await duellio_crud.read_all_situations_with_tags_from_db(session)
-    return all_situations
+    return paginate(all_situations)
 
 
 @router.post(

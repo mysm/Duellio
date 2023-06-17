@@ -1,6 +1,8 @@
 # app/main.py
 from fastapi import FastAPI
 
+from fastapi_pagination import add_pagination
+
 from app.api.duellio import router
 from app.core.config import settings
 
@@ -9,3 +11,5 @@ from app.core.config import settings
 app = FastAPI(title=settings.app_title, description=settings.description)
 
 app.include_router(router)
+
+add_pagination(app)
