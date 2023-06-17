@@ -22,7 +22,9 @@ class CRUDDuellio(CRUDBase):
         db_situation = Situation(**new_situation_data)
         if tags_names:
             for tag_name in tags_names:
-                tag = await tags_crud.get_or_create_tag_by_name(tag_name, session)
+                tag = await tags_crud.get_or_create_tag_by_name(
+                    tag_name, session
+                )
                 db_situation.tags.append(tag)
         session.add(db_situation)
         await session.commit()
@@ -45,6 +47,18 @@ class CRUDDuellio(CRUDBase):
         )
         return db_situations.scalars().unique().all()
 
+    async def read_situation_with_tags_from_db_by_name(
+        self,
+        situation_title: str,
+        session: AsyncSession,
+    ):
+        db_situation = await session.execute(
+            select(Situation)
+            .options(joinedload(Situation.tags))
+            .where(Situation.title == situation_title)
+        )
+        return db_situation.scalars().first()
+
     async def get_situation_by_id(
         self,
         situation_id: int,
@@ -66,6 +80,22 @@ class CRUDDuellio(CRUDBase):
             result = db_situation.id
         return result
 
+    async def update_situation_tags(
+        self,
+        situation: Situation,
+        tags_names: Optional[list[Tags]],
+        session: AsyncSession,
+    ) -> Optional[Situation]:
+        db_situation = await self.read_situation_with_tags_from_db_by_name(
+            situation.title, session
+        )
+        if db_situation is None:
+            return None
+        db_situation.tags.clear()
+        for tag_name in tags_names:
+            tag = await tags_crud.get_or_create_tag_by_name(tag_name, session)
+            db_situation.tags.append(tag)
+        return await self.update(db_situation, session)
+
 
 duellio_crud = CRUDDuellio(Situation)
-
