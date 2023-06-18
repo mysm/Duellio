@@ -95,7 +95,9 @@ class CRUDDuellio(CRUDBase):
         for tag_name in tags_names:
             tag = await tags_crud.get_or_create_tag_by_name(tag_name, session)
             db_situation.tags.append(tag)
-        return await self.update(db_situation, session)
+        await session.commit()
+        await session.refresh(db_situation)
+        return db_situation
 
 
 duellio_crud = CRUDDuellio(Situation)
