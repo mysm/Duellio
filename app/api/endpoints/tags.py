@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
 from app.crud.duellio import duellio_crud
-from app.schemas.duellio import Situation, SituationDB, Tags
+from app.schemas.duellio import Situation, Tags, SituationDB
 
 router = APIRouter()
 
