@@ -47,6 +47,17 @@ class CRUDDuellio(CRUDBase):
         )
         return db_situations.scalars().unique().all()
 
+    async def read_all_situations_with_tags_from_db_by_attribute(
+        self,
+        attr_name: str, attr_value: str,
+        session: AsyncSession,
+    ):
+        attr = getattr(self.model, attr_name)
+        db_situations = await session.execute(
+            select(Situation).where(attr == attr_value).options(joinedload(Situation.tags))
+        )
+        return db_situations.scalars().unique().all()
+
     async def read_situation_with_tags_from_db_by_name(
         self,
         situation_title: str,

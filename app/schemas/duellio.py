@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class Situation(BaseModel):
     title: str
     text: str
+    standard: bool
 
 
 class SituationDB(Situation):

@@ -22,6 +22,15 @@ class CRUDBase:
         db_objs = await session.execute(select(self.model))
         return db_objs.scalars().all()
 
+    async def get_multi_by_attribute(
+        self, attr_name: str, attr_value: str, session: AsyncSession
+    ):
+        attr = getattr(self.model, attr_name)
+        db_objs = await session.execute(
+            select(self.model).where(attr == attr_value)
+        )
+        return db_objs.scalars().all()
+
     async def get_by_attribute(
         self,
         attr_name: str,

@@ -20,10 +20,13 @@ router = APIRouter()
     response_model_exclude_none=True,
 )
 async def get_all_situations(
+    standard: bool,
     session: AsyncSession = Depends(get_async_session),
     params: Params = Depends(),
 ):
-    all_situations = await duellio_crud.read_all_situations_with_tags_from_db(
+    all_situations = await duellio_crud.read_all_situations_with_tags_from_db_by_attribute(
+        "standard",
+        standard,
         session
     )
     warnings.simplefilter("ignore", FastAPIPaginationWarning)
@@ -52,3 +55,22 @@ async def create_new_situation(
         situation, tags, session
     )
     return new_situation
+
+
+@router.delete(
+    "/{situation_id}",
+    response_model=SituationDB,
+    response_model_exclude_none=True,
+)
+async def delete_situation(
+    situation_id: int,
+    session: AsyncSession = Depends(get_async_session),
+):
+    situation = await duellio_crud.get_situation_by_id(situation_id, session)
+    if situation is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Ситуация с таким id не существует!",
+        )
+    await duellio_crud.remove(situation, session)
+    return situation
