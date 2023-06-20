@@ -95,6 +95,7 @@ class CRUDDuellio(CRUDBase):
         self,
         situation: Situation,
         tags_names: Optional[list[Tags]],
+        clear: bool,
         session: AsyncSession,
     ) -> Optional[Situation]:
         db_situation = await self.read_situation_with_tags_from_db_by_name(
@@ -102,7 +103,8 @@ class CRUDDuellio(CRUDBase):
         )
         if db_situation is None:
             return None
-        db_situation.tags.clear()
+        if clear:
+            db_situation.tags.clear()
         for tag_name in tags_names:
             tag = await tags_crud.get_or_create_tag_by_name(tag_name, session)
             db_situation.tags.append(tag)

@@ -4,10 +4,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
-from app.crud.duellio import duellio_crud
-from app.schemas.duellio import Situation, Tags, SituationDB
+from app.crud.duellio import duellio_crud, tags_crud
+from app.schemas.duellio import Situation, Tags, SituationDB, TagsDB
 
 router = APIRouter()
+
+
+@router.get(
+    "/",
+    response_model=list[TagsDB],
+    response_model_exclude_none=True,
+)
+async def get_tags(session: AsyncSession = Depends(get_async_session),):
+    db_tags = await tags_crud.get_multi(session)
+    return db_tags
 
 
 @router.post(
@@ -18,6 +28,7 @@ router = APIRouter()
 async def update_situation_tags(
     situation: Situation,
     tags: list[Tags],
+    clear: bool,
     session: AsyncSession = Depends(get_async_session),
 ):
     situation_id = await duellio_crud.get_situation_id_by_name(
@@ -29,6 +40,6 @@ async def update_situation_tags(
             detail="Ситуации с таким названием не существует!",
         )
     updated_situation = await duellio_crud.update_situation_tags(
-        situation, tags, session
+        situation, tags, clear, session
     )
     return updated_situation
