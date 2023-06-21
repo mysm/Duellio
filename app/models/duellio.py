@@ -1,10 +1,11 @@
 # app/models/duellio.py
+from typing import List
 
-# Добавьте импорт класса Text.
-from sqlalchemy import Column, String, Text, Table, ForeignKey, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Table, Text, ForeignKey, Boolean
+from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from app.core.db import Base
+
 
 situation_tags = Table(
     "situation_tags",
@@ -15,6 +16,7 @@ situation_tags = Table(
 
 
 class Situation(Base):
+    id: Mapped[int] = mapped_column(primary_key=True)
     title = Column(String(250), unique=True, nullable=False)
     text = Column(Text, nullable=False)
     standard = Column(Boolean, default=True)
@@ -24,7 +26,8 @@ class Situation(Base):
 
 
 class Tags(Base):
+    id: Mapped[int] = mapped_column(primary_key=True)
     name = Column(String(250), unique=True, nullable=False)
-    situations = relationship(
+    situations: Mapped[List[Situation]] = relationship(
         "Situation", secondary="situation_tags", back_populates="tags"
     )

@@ -8,7 +8,7 @@ from sqlalchemy.orm import joinedload
 
 from app.crud.base import CRUDBase
 from app.crud.tags import tags_crud
-from app.models.duellio import Situation, Tags
+from app.models.duellio import Situation, Tags, situation_tags
 
 
 class CRUDDuellio(CRUDBase):
@@ -49,12 +49,15 @@ class CRUDDuellio(CRUDBase):
 
     async def read_all_situations_with_tags_from_db_by_attribute(
         self,
-        attr_name: str, attr_value: str,
+        attr_name: str,
+        attr_value: str,
         session: AsyncSession,
     ):
         attr = getattr(self.model, attr_name)
         db_situations = await session.execute(
-            select(Situation).where(attr == attr_value).options(joinedload(Situation.tags))
+            select(Situation)
+            .where(attr == attr_value)
+            .options(joinedload(Situation.tags))
         )
         return db_situations.scalars().unique().all()
 
@@ -111,6 +114,23 @@ class CRUDDuellio(CRUDBase):
         await session.commit()
         await session.refresh(db_situation)
         return db_situation
+
+    async def get_situations_by_tags(
+        self,
+        tags: list[Tags],
+        session: AsyncSession,
+    ) -> list[Situation]:
+        tags_names = [tag.name for tag in tags]
+        subquery = await session.execute(
+            select(situation_tags).join(Tags).where(Tags.name.in_(tags_names))
+        )
+        situation_ids = subquery.scalars().unique().all()
+        db_situations = await session.execute(
+            select(Situation)
+            .options(joinedload(Situation.tags, innerjoin=True))
+            .where(Situation.id.in_(situation_ids))
+        )
+        return db_situations.scalars().unique().all()
 
 
 duellio_crud = CRUDDuellio(Situation)
