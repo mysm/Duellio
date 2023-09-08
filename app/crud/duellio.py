@@ -2,7 +2,7 @@
 
 from typing import Optional, Union
 
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
@@ -129,6 +129,23 @@ class CRUDDuellio(CRUDBase):
             select(Situation)
             .options(joinedload(Situation.tags, innerjoin=True))
             .where(Situation.id.in_(situation_ids))
+        )
+        return db_situations.scalars().unique().all()
+
+    async def get_situations_by_keywords(
+        self, keywords: list[str], session: AsyncSession
+    ) -> list[Situation]:
+        """
+        Поиск ситуаций по ключевым словам
+        """
+        conditions = []
+        for search_string in keywords:
+            conditions.append(Situation.text.ilike(f"%{search_string}%"))
+
+        db_situations = await session.execute(
+            select(Situation)
+            .options(joinedload(Situation.tags, innerjoin=True))
+            .where(or_(*conditions))
         )
         return db_situations.scalars().unique().all()
 
