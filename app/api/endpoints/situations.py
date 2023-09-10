@@ -49,6 +49,24 @@ async def get_all_situations(
 
 
 @router.post(
+    "/duel",
+    response_model=Page[SituationSchemaDB],
+    response_model_exclude_none=True,
+    summary="Get situations by keywords",
+)
+async def get_all_situations(
+    keywords: list[str],
+    session: AsyncSession = Depends(get_async_session),
+    params: Params = Depends(),
+):
+    situations = await duellio_crud.get_situations_by_keywords(
+        keywords, session
+    )
+    warnings.simplefilter("ignore", FastAPIPaginationWarning)
+    return paginate(situations, params)
+
+
+@router.post(
     "/",
     response_model=SituationDB,
     response_model_exclude_none=True,
