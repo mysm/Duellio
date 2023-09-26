@@ -14,12 +14,15 @@ logging.basicConfig(level=logging.INFO)
 async def guess_similar_words(word: str, topn: int = 5) -> list:
     positive = word.split(" ")
     model = get_model()
-    result = [
-        similar_word
-        for i, (similar_word, _) in enumerate(
-            model.most_similar(positive=positive, topn=topn), 1
-        )
-    ]
+    try:
+        result = [
+            similar_word
+            for i, (similar_word, _) in enumerate(
+                model.most_similar(positive=positive, topn=topn), 1
+            )
+        ]
+    except KeyError:
+        result = []
     return result
 
 
