@@ -48,6 +48,8 @@ def add_situations(file_name: str, standard: bool) -> int:
         reader = csv.reader(file)
         next(reader)  # пропуск заголовка
         for row in reader:
+            if len(row) < 3:
+                continue
             content = row[2]
             pos = content.find(
                 "Записи управленческих поединков по данной ситуации:"
@@ -94,10 +96,12 @@ def update_tags() -> int:
     return updated
 
 
-updated = add_situations("situatsii.csv", True)
+#updated = add_situations("situatsii.csv", True)
+updated = add_situations("standard_02.csv", True)
 print(f"added standard {updated}")
-updated = add_situations("ekspress-situatsii.csv", False)
+#updated = add_situations("ekspress-situatsii.csv", False)
+updated = add_situations("express_02.csv", False)
 print(f"added express {updated}")
 
-updated = update_tags()
-print(f"updated tags {updated}")
+#updated = update_tags()
+#print(f"updated tags {updated}")
