@@ -67,7 +67,7 @@ def add_situations(file_name: str, standard: bool) -> int:
             if r.status_code == 200:
                 updated += 1
             else:
-                print(f"{r.status_code}: {r.text}")
+                print(f"error add {title}. {r.status_code}: {r.text}")
     return updated
 
 
@@ -97,10 +97,10 @@ def update_tags() -> int:
 
 
 #updated = add_situations("situatsii.csv", True)
-updated = add_situations("standard_02.csv", True)
+updated = add_situations("situations_kub.csv", True)
 print(f"added standard {updated}")
 #updated = add_situations("ekspress-situatsii.csv", False)
-updated = add_situations("express_02.csv", False)
+updated = add_situations("situations_bub.csv", False)
 print(f"added express {updated}")
 
 #updated = update_tags()

@@ -142,11 +142,13 @@ class CRUDDuellio(CRUDBase):
         for search_string in keywords:
             conditions.append(Situation.text.ilike(f"%{search_string}%"))
 
+
         db_situations = await session.execute(
             select(Situation)
-            .options(joinedload(Situation.tags, innerjoin=True))
+            .options(joinedload(Situation.tags, innerjoin=False))
             .where(or_(*conditions))
         )
+
         return db_situations.scalars().unique().all()
 
 
