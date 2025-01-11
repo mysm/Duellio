@@ -96,11 +96,9 @@ def update_tags() -> int:
     return updated
 
 
-#updated = add_situations("situatsii.csv", True)
-updated = add_situations("situations_kub.csv", True)
+updated = add_situations("standard_11.csv", True)
 print(f"added standard {updated}")
-#updated = add_situations("ekspress-situatsii.csv", False)
-updated = add_situations("situations_bub.csv", False)
+updated = add_situations("express_11.csv", False)
 print(f"added express {updated}")
 
 #updated = update_tags()

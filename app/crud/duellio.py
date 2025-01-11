@@ -146,7 +146,7 @@ class CRUDDuellio(CRUDBase):
         db_situations = await session.execute(
             select(Situation)
             .options(joinedload(Situation.tags, innerjoin=False))
-            .where(or_(*conditions))
+            .where(or_(*conditions)).order_by(Situation.standard)
         )
 
         return db_situations.scalars().unique().all()
